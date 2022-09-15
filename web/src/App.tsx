@@ -1,8 +1,25 @@
 import './styles/main.css'
 import Logo from './assets/logo.svg';
-import { MagnifyingGlassPlus } from 'phosphor-react';
+import { GameCard } from './components/GameCard';
+import { useEffect, useState } from 'react';
+import { AdForm } from './components/AdForm';
+
+interface Game {
+  id: string;
+  title: string;
+  imageUrl: string;
+  _count: {
+    ads: number;
+  };
+}
 
 function App() {
+  const [games, setGames] = useState<Array<Game>>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3333/games').then(response => response.json()).then(data => setGames(data));
+  }, []);
+
   return (
     <div className="max-w-6xl mx-auto flex flex-col items-center m-16">
       <img src={Logo} />
@@ -12,30 +29,12 @@ function App() {
       </h1>
 
       <div className="grid grid-cols-6 gap-6 my-8">
-        {['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5', 'Game 6'].map((game) => (
-          <a href="" className="relative w-44 h-60 bg-violet-500 rounded-lg overflow-hidden">
-
-            <div className="w-full bg-subtitle-gradient pb-4 px-4 pt-16 absolute bottom-0">
-              <strong className="font-bold text-white block">{game}</strong>
-              <span className="text-zinc-500 text-sm block">4 anúncios</span>
-            </div>
-          </a>
+        {games.map((game) => (
+          <GameCard key={game.id} {...game} adsCount={game._count.ads} />
         ))}
       </div>
 
-      <div className="bg-nlw-gradient pt-1 self-stretch rounded-lg overflow-hidden">
-        <div className="bg-[#2A2624] px-8 py-6 flex justify-between items-center">
-          <div>
-            <strong className="text-2xl text-white font-black block">Não encontrou seu duo?</strong>
-            <span className="text-zinc-400 block">Publique um anúncio para encontrar novos players!</span>
-          </div>
-
-          <button className="py-3 px-4 bg-violet-500 text-white hover:bg-violet-600 rounded flex items-center gap-3 border-0">
-            <MagnifyingGlassPlus size={24} />
-            Publicar anúncio
-          </button>
-        </div>
-      </div>
+      <AdForm />
     </div>
   )
 }
