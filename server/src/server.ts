@@ -78,6 +78,27 @@ app.get('/ads/:id', async (request, response) => {
   const adId = request.params.id
   const ad = await prisma.ad.findUniqueOrThrow({
     select: {
+      id: true,
+      name: true,
+      yearsPlaying: true,
+      weekDays: true,
+      hourStart: true,
+      hourEnd: true,
+      useVoiceChannel: true,
+      createdAt: true,
+    },
+    where: {
+      id: adId
+    }
+  });
+
+  response.json(ad);
+});
+
+app.get('/ads/:id/discord', async (request, response) => {
+  const adId = request.params.id
+  const ad = await prisma.ad.findUniqueOrThrow({
+    select: {
       discord: true
     },
     where: {
