@@ -1,24 +1,21 @@
 import './styles/main.css'
+import axios from 'axios';
 import Logo from './assets/logo.svg';
 import { GameCard } from './components/GameCard';
 import { useEffect, useState } from 'react';
 import { AdForm } from './components/AdForm';
-
-interface Game {
-  id: string;
-  title: string;
-  imageUrl: string;
-  _count: {
-    ads: number;
-  };
-}
+import { Game } from './interfaces/game';
 
 function App() {
   const [games, setGames] = useState<Array<Game>>([]);
+  const [reloadGames, setReloadGames] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch('http://localhost:3333/games').then(response => response.json()).then(data => setGames(data));
-  }, []);
+    if (reloadGames) {
+      axios('http://localhost:3333/games').then((response) => setGames(response.data));
+      setReloadGames(false);
+    }
+  }, [reloadGames]);
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col items-center m-16">
@@ -34,7 +31,7 @@ function App() {
         ))}
       </div>
 
-      <AdForm />
+      <AdForm onSave={() => setReloadGames(true)} />
     </div>
   )
 }
